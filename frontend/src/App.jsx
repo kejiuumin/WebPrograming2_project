@@ -1,7 +1,15 @@
+import { Link, Route, Routes } from "react-router-dom";
+import Home from "./pages/Home";
+
 function App() {
   return (
     <>
-      <p>세팅</p>
+      <nav>
+        <Link to="/">Home</Link>
+      </nav>
+      <Routes>
+        <Route path="/" element={<Home />} />
+      </Routes>
     </>
   );
 }

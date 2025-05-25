@@ -1,6 +1,6 @@
 export default function GameBox({ game }) {
   return (
-    <div className="w-1/4 mx-5 bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-shadow duration-300 overflow-hidden flex flex-col cursor-pointer">
+    <div className="w-full bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-shadow duration-300 overflow-hidden flex flex-col cursor-pointer">
       <img
         src={game.image}
         alt={game.title}

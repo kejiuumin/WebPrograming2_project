@@ -1,9 +1,8 @@
-import React from "react";
 import { Link } from "react-router-dom";
 
 export default function Banner() {
   return (
-    <div className="flex flex-col justify-center items-center py-10">
+    <div className="flex flex-col justify-center items-center py-10 mt-8 rounded-2xl bg-gradient-to-r from-blue-100 via-purple-100 to-[#f3f7fa]">
       <h1 className="font-bold text-5xl/26">GameHub</h1>
       <h3 className="font-bold text-xl/8 text-center">
         GameHub는 전 세계 게이머들이 모여 <br />

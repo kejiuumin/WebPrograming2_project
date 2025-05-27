@@ -4,6 +4,7 @@ import GameBoxs from "../components/Home/GameBoxs";
 export default function Home() {
   const games = [
     {
+      id: 1,
       title: "Five Nights at Freddy's",
       genre: "공포",
       release_date: "2014. 8. 18.",
@@ -14,6 +15,7 @@ export default function Home() {
       rating: "97.1",
     },
     {
+      id: 2,
       title: "The Exit 8",
       genre: "공포",
       release_date: "2023. 11. 29.",
@@ -24,6 +26,7 @@ export default function Home() {
       rating: "97.2",
     },
     {
+      id: 3,
       title: "R.E.P.O.",
       genre: "공포",
       release_date: "2025. 2. 26.",
@@ -34,6 +37,7 @@ export default function Home() {
       rating: "97.8",
     },
     {
+      id: 4,
       title: "Escape the Backrooms",
       genre: "공포",
       release_date: "2022. 8. 12.",

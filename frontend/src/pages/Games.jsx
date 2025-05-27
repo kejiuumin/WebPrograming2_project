@@ -16,6 +16,7 @@ export default function Games() {
 
   const games = [
     {
+      id: 1,
       title: "Five Nights at Freddy's",
       genre: "공포",
       release_date: "2014. 8. 18.",
@@ -26,6 +27,7 @@ export default function Games() {
       rating: "97.1",
     },
     {
+      id: 2,
       title: "The Exit 8",
       genre: "공포",
       release_date: "2023. 11. 29.",
@@ -36,6 +38,7 @@ export default function Games() {
       rating: "97.2",
     },
     {
+      id: 3,
       title: "R.E.P.O.",
       genre: "공포",
       release_date: "2025. 2. 26.",
@@ -46,6 +49,7 @@ export default function Games() {
       rating: "97.8",
     },
     {
+      id: 4,
       title: "Escape the Backrooms",
       genre: "공포",
       release_date: "2022. 8. 12.",
@@ -56,14 +60,15 @@ export default function Games() {
       rating: "92.1",
     },
     {
-      title: "Escape the Backrooms",
+      id: 5,
+      title: "Five Nights at Freddy's",
       genre: "공포",
-      release_date: "2022. 8. 12.",
+      release_date: "2014. 8. 18.",
       description:
-        "플레이어는 숨어 있는 것의 손아귀에 있으며 탈출하기 위해 필요한 모든 조치를 취해야 합니다.",
+        "수리공을 부르는 것보다 당신을 경비원으로 고용하는 것이 훨씬 저렴했기 때문이죠. 과연 5일 밤을 무사히 살아남을 수 있을까요?",
       image:
-        "https://search.pstatic.net/common/?src=http%3A%2F%2Fblogfiles.naver.net%2FMjAyNDA5MjNfMjgy%2FMDAxNzI3MDY3OTczMTIz.FGcLjZI0CWah0rjhXgpnsEn-yl77InBLVIC2SEreExcg.813PimIMtMZbmycAk1ycZLtfvxdR7TW0LdB_OwAKuJgg.JPEG%2F1.jpg&type=sc960_832",
-      rating: "92.1",
+        "https://search.pstatic.net/common/?src=http%3A%2F%2Fblogfiles.naver.net%2FMjAyMjA0MDNfMjY4%2FMDAxNjQ4OTg0NDU2NDE1.Gegg1rX5zTyzAFUAu2lGdUg2qi_aTNbJyfIbGaVeR9cg._xCF4d0oFiWWCQtaVO88MipHTqAy3G6YlXKCxK11LiYg.JPEG.eeuu1133%2F%25C7%25C1%25B7%25B9%25B5%25F0%25C0%25C7%25C7%25C7%25C0%25DA%25B0%25A1%25B0%25D4_8.jpg&type=sc960_832",
+      rating: "97.1",
     },
   ];
 

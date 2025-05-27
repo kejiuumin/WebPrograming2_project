@@ -1,6 +1,11 @@
+import { Link } from "react-router-dom";
+
 export default function GameBox({ game }) {
   return (
-    <div className="w-full bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-shadow duration-300 overflow-hidden flex flex-col cursor-pointer">
+    <Link
+      to={`/game/${game.id}`}
+      className="w-full bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-shadow duration-300 overflow-hidden flex flex-col cursor-pointer"
+    >
       <img
         src={game.image}
         alt={game.title}
@@ -21,6 +26,6 @@ export default function GameBox({ game }) {
           <span className="font-semibold text-gray-700">{game.rating}</span>
         </div>
       </div>
-    </div>
+    </Link>
   );
 }

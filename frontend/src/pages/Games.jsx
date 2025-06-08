@@ -1,101 +1,196 @@
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams, useLocation } from "react-router-dom";
+import { useEffect, useState } from "react";
 import Banner from "./../components/Games/Banner";
 import Category from "./../components/Games/Category";
 import GameList from "./../components/Games/GameList";
+import SearchBar from "./../components/Games/SearchBar";
+import axios from "axios";
+import LoadingSpinner from "../components/LoadingSpinner";
 
 export default function Games() {
   const location = useLocation();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
 
-  const query = new URLSearchParams(location.search);
-  const sort = query.get("sort") || "popular";
+  // 쿼리스트링 파싱
+  const sort = searchParams.get("sort") || "popular";
+  const search = searchParams.get("search") || "";
+  const genreId = searchParams.get("genreId") || null;
+  const page = parseInt(searchParams.get("page") || "1");
 
-  const handleCategoryClick = (value) => {
-    navigate(`/games?sort=${value}`);
+  // 상태 관리
+  const [searchInput, setSearchInput] = useState(search);
+  const [genres, setGenres] = useState([]);
+  const [showGenreMenu, setShowGenreMenu] = useState(sort === "genre");
+  const [games, setGames] = useState([]);
+  const [totalPages, setTotalPages] = useState(1);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  // 장르 목록 불러오기 (withCredentials 추가)
+  useEffect(() => {
+    axios
+      .get("/api/projectB/game/genres", { withCredentials: true }) // 추가
+      .then((response) => setGenres(response.data))
+      .catch((err) => console.error("장르 목록 불러오기 실패:", err));
+  }, []);
+
+  // 게임 목록 불러오기 (withCredentials 추가)
+  useEffect(() => {
+    const fetchGames = async () => {
+      setLoading(true);
+      try {
+        const params = {
+          sort: sort === "genre" ? null : sort,
+          keyword: search,
+          genreId: sort === "genre" ? genreId : null,
+          page: page - 1,
+          size: 8,
+        };
+
+        const res = await axios.get("/api/projectB/game/list", {
+          params,
+          withCredentials: true, // 추가
+        });
+
+        setGames(res.data.games || []);
+        setTotalPages(res.data.totalPages || 1);
+      } catch (err) {
+        setError(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchGames();
+  }, [sort, search, genreId, page]);
+
+  // 페이지 변경 핸들러
+  const handlePageChange = (newPage) => {
+    const params = new URLSearchParams(location.search);
+    params.set("page", newPage);
+    navigate(`/games?${params.toString()}`);
   };
 
-  const games = [
-    {
-      id: 1,
-      title: "Five Nights at Freddy's",
-      genre: "공포",
-      release_date: "2014. 8. 18.",
-      description:
-        "수리공을 부르는 것보다 당신을 경비원으로 고용하는 것이 훨씬 저렴했기 때문이죠. 과연 5일 밤을 무사히 살아남을 수 있을까요?",
-      image:
-        "https://search.pstatic.net/common/?src=http%3A%2F%2Fblogfiles.naver.net%2FMjAyMjA0MDNfMjY4%2FMDAxNjQ4OTg0NDU2NDE1.Gegg1rX5zTyzAFUAu2lGdUg2qi_aTNbJyfIbGaVeR9cg._xCF4d0oFiWWCQtaVO88MipHTqAy3G6YlXKCxK11LiYg.JPEG.eeuu1133%2F%25C7%25C1%25B7%25B9%25B5%25F0%25C0%25C7%25C7%25C7%25C0%25DA%25B0%25A1%25B0%25D4_8.jpg&type=sc960_832",
-      rating: "97.1",
-    },
-    {
-      id: 2,
-      title: "The Exit 8",
-      genre: "공포",
-      release_date: "2023. 11. 29.",
-      description:
-        '당신은 끝없는 지하 통로에 갇혀있습니다. 주변을 주의 깊게 관찰하여 "8번 출구"에 도달하세요.',
-      image:
-        "https://search.pstatic.net/common/?src=http%3A%2F%2Fblogfiles.naver.net%2FMjAyNDAyMDVfNiAg%2FMDAxNzA3MTI5MzAzMTk4.pCp4hqKemFUxjXwkQADddKQscgxbRfSEAWkTnZ8UqPYg.hsglHFVXLLACVUcCvA9oJC9F0FPoRFFF_j2YK7QPSvIg.JPEG.mssixx%2FIMG_5773.jpg&type=sc960_832",
-      rating: "97.2",
-    },
-    {
-      id: 3,
-      title: "R.E.P.O.",
-      genre: "공포",
-      release_date: "2025. 2. 26.",
-      description:
-        "최대 6명의 플레이어와 함께하는 온라인 협력 호러 게임. 완전한 물리 기반의 값진 물건을 찾아 조심스럽게 다루고, 이를 회수해 탈출하여 창조주의 욕망을 충족시키세요.",
-      image:
-        "https://search.pstatic.net/common/?src=http%3A%2F%2Fblogfiles.naver.net%2FMjAyNDA5MjNfMjgy%2FMDAxNzI3MDY3OTczMTIz.FGcLjZI0CWah0rjhXgpnsEn-yl77InBLVIC2SEreExcg.813PimIMtMZbmycAk1ycZLtfvxdR7TW0LdB_OwAKuJgg.JPEG%2F1.jpg&type=sc960_832",
-      rating: "97.8",
-    },
-    {
-      id: 4,
-      title: "Escape the Backrooms",
-      genre: "공포",
-      release_date: "2022. 8. 12.",
-      description:
-        "플레이어는 숨어 있는 것의 손아귀에 있으며 탈출하기 위해 필요한 모든 조치를 취해야 합니다.",
-      image:
-        "https://search.pstatic.net/common/?src=http%3A%2F%2Fblogfiles.naver.net%2FMjAyNDA5MjNfMjgy%2FMDAxNzI3MDY3OTczMTIz.FGcLjZI0CWah0rjhXgpnsEn-yl77InBLVIC2SEreExcg.813PimIMtMZbmycAk1ycZLtfvxdR7TW0LdB_OwAKuJgg.JPEG%2F1.jpg&type=sc960_832",
-      rating: "92.1",
-    },
-    {
-      id: 5,
-      title: "Five Nights at Freddy's",
-      genre: "공포",
-      release_date: "2014. 8. 18.",
-      description:
-        "수리공을 부르는 것보다 당신을 경비원으로 고용하는 것이 훨씬 저렴했기 때문이죠. 과연 5일 밤을 무사히 살아남을 수 있을까요?",
-      image:
-        "https://search.pstatic.net/common/?src=http%3A%2F%2Fblogfiles.naver.net%2FMjAyMjA0MDNfMjY4%2FMDAxNjQ4OTg0NDU2NDE1.Gegg1rX5zTyzAFUAu2lGdUg2qi_aTNbJyfIbGaVeR9cg._xCF4d0oFiWWCQtaVO88MipHTqAy3G6YlXKCxK11LiYg.JPEG.eeuu1133%2F%25C7%25C1%25B7%25B9%25B5%25F0%25C0%25C7%25C7%25C7%25C0%25DA%25B0%25A1%25B0%25D4_8.jpg&type=sc960_832",
-      rating: "97.1",
-    },
-  ];
+  // 검색 실행 시 (withCredentials 추가)
+  const handleSearch = () => {
+    const params = new URLSearchParams(location.search);
+    if (searchInput) {
+      params.set("search", searchInput);
+    } else {
+      params.delete("search");
+    }
+    if (!params.get("sort")) params.set("sort", sort);
+    navigate(`/games?${params.toString()}`);
+  };
+  // 전체 장르 선택
+  const handleAllGenre = () => {
+    const params = new URLSearchParams(location.search);
+    params.set("sort", "genre");
+    params.delete("genreId"); // 장르 ID 제거
+    if (search) params.set("search", search);
+    navigate(`/games?${params.toString()}`);
+  };
+
+  // 특정 장르 선택
+  const handleGenreClick = (genreId) => {
+    const params = new URLSearchParams(location.search);
+    params.set("sort", "genre");
+    params.set("genreId", genreId);
+    if (search) params.set("search", search);
+    navigate(`/games?${params.toString()}`);
+  };
+  
+  if (loading) return <LoadingSpinner />;
+  if (error) return <div>에러 발생: {error.message}</div>;
+
+
 
   return (
     <div className="max-w-[1200px] mx-auto mt-12 px-4">
       <Banner />
+      <SearchBar
+        value={searchInput}
+        onChange={(e) => setSearchInput(e.target.value)}
+        onSearch={handleSearch}
+      />
       <div className="w-full flex flex-wrap gap-4 justify-center my-8">
         <Category
           text="인기순"
           to="/games?sort=popular"
           checked={sort === "popular"}
-          onClick={() => handleCategoryClick("popular")}
         />
         <Category
           text="최신순"
-          to="/games?sort=latest"
-          checked={sort === "latest"}
-          onClick={() => handleCategoryClick("latest")}
+          to="/games?sort=recent"
+          checked={sort === "recent"}
         />
         <Category
           text="장르별"
           to="/games?sort=genre"
           checked={sort === "genre"}
-          onClick={() => handleCategoryClick("genre")}
         />
       </div>
+      {/* 장르별 메뉴 */}
+      {showGenreMenu && (
+        <div className="w-full flex flex-wrap mb-8">
+          <button
+            className={`w-[15%] text-center py-2 rounded-full text-sm font-medium transition-colors mx-auto
+              ${
+                !genreId
+                  ? "bg-blue-600 text-white hover:bg-blue-700"
+                  : "bg-gray-100 hover:bg-gray-200"
+              }`}
+            onClick={handleAllGenre}
+          >
+            전체
+          </button>
+          {genres.map((genre) => (
+          <button
+            key={genre.id}
+            onClick={() => handleGenreClick(genre.id)}
+            className={`w-[15%] text-centerpy-2 rounded-full text-sm font-medium transition-colors mx-auto
+              ${
+                genreId == genre.id
+                  ? "bg-blue-600 text-white hover:bg-blue-700"
+                  : "bg-gray-100 hover:bg-gray-200"
+              }`}
+          >
+            {genre.name}
+          </button>
+          ))}
+        </div>
+      )}
       <GameList games={games} />
+
+      <div className="mt-8 flex justify-center gap-2">
+        <button
+          onClick={() => handlePageChange(page - 1)}
+          disabled={page === 1}
+          className="px-4 py-2 bg-gray-200 rounded cursor-pointer disabled:opacity-50"
+        >
+          이전
+        </button>
+
+        {[...Array(totalPages)].map((_, idx) => (
+          <button
+            key={idx}
+            onClick={() => handlePageChange(idx + 1)}
+            className={`px-4 py-2 cursor-pointer ${
+              page === idx + 1 ? "bg-blue-500 text-white " : "bg-gray-200"
+            } rounded`}
+          >
+            {idx + 1}
+          </button>
+        ))}
+
+        <button
+          onClick={() => handlePageChange(page + 1)}
+          disabled={page === totalPages}
+          className="px-4 py-2 bg-gray-200 rounded cursor-pointer disabled:opacity-50"
+        >
+          다음
+        </button>
+      </div>
     </div>
   );
 }

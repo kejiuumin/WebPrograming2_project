@@ -1,40 +1,55 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Input from "../components/Input";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
+import Swal from "sweetalert2";
 
 export default function SignUp() {
   const [form, setForm] = useState({
-    username: "",
-    nickname: "",
-    password: "",
-    passwordConfirm: "",
+    name: "",
+    email: "",
+    passwd: "",
+    address: "",
+    phone: "",
+    favoriteGenreId: null,
   });
+  const [genres, setGenres] = useState([]);
   const [error, setError] = useState("");
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    axios
+      .get("/api/projectB/game/genres")
+      .then((response) => setGenres(response.data))
+      .catch((err) => console.error("장르 목록 불러오기 실패:", err));
+  }, []);
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
-    setError(""); // 입력값 변경 시 에러 초기화
+    setError("");
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (
-      !form.username ||
-      !form.nickname ||
-      !form.password ||
-      !form.passwordConfirm
-    ) {
-      setError("모든 항목을 입력해 주세요.");
+    if (!form.name || !form.email || !form.passwd) {
+      setError("이름, 이메일, 비밀번호는 필수 입력입니다.");
       return;
     }
-    if (form.password !== form.passwordConfirm) {
-      setError("비밀번호가 일치하지 않습니다.");
-      return;
+    try {
+      await axios.post("/api/projectB/register", form);
+      Swal.fire({
+        title: "회원가입",
+        text: "회원가입 되었습니다.",
+        icon: "success",
+        confirmButtonText: "확인",
+      });
+      navigate("/login");
+    } catch (err) {
+      console.error("회원가입 실패:", err.response?.data);
+      setError(
+        err.response?.data?.message || "회원가입 중 오류가 발생했습니다."
+      );
     }
-    alert(
-      `회원가입 정보\n아이디: ${form.username}\n닉네임: ${form.nickname}\n비밀번호: ${form.password}`
-    );
-    // 실제 회원가입 API 연동은 여기에서 구현 예정정
   };
 
   return (
@@ -44,31 +59,51 @@ export default function SignUp() {
       </Link>
       <form onSubmit={handleSubmit} className="w-full">
         <Input
-          name="username"
-          value={form.username}
+          name="name"
+          value={form.name}
           onChange={handleChange}
-          placeholder="아이디를 입력하세요"
+          placeholder="이름을 입력하세요"
         />
         <Input
-          name="nickname"
-          value={form.nickname}
+          name="email"
+          value={form.email}
           onChange={handleChange}
-          placeholder="닉네임을 입력하세요"
+          placeholder="이메일을 입력하세요"
         />
         <Input
           type="password"
-          name="password"
-          value={form.password}
+          name="passwd"
+          value={form.passwd}
           onChange={handleChange}
           placeholder="비밀번호를 입력하세요"
         />
         <Input
-          type="password"
-          name="passwordConfirm"
-          value={form.passwordConfirm}
+          name="address"
+          value={form.address}
           onChange={handleChange}
-          placeholder="비밀번호 확인"
+          placeholder="주소를 입력하세요"
         />
+        <Input
+          name="phone"
+          value={form.phone}
+          onChange={handleChange}
+          placeholder="전화번호를 입력하세요"
+        />
+        <div className="w-full mb-4">
+          <select
+            name="favoriteGenreId"
+            value={form.favoriteGenreId || ""}
+            onChange={handleChange}
+            className="w-full px-3 py-2 border border-gray-300 rounded"
+          >
+            <option value="">선호 장르 선택</option>
+            {genres.map((genre) => (
+              <option key={genre.id} value={genre.id}>
+                {genre.name}
+              </option>
+            ))}
+          </select>
+        </div>
         {error && <div className="text-red-500 text-sm mb-2">{error}</div>}
         <button
           type="submit"

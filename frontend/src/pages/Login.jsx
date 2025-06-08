@@ -1,24 +1,43 @@
 import React, { useState } from "react";
 import Input from "../components/Input";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import useAuthStore from "../stores/authStore";
+import Swal from "sweetalert2";
 
 export default function Login() {
-  const [form, setForm] = useState({ username: "", password: "" });
-  const [error, setError] = useState(""); // 에러 메시지 상태 추가
+  const [form, setForm] = useState({ email: "", passwd: "" });
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false); // 로딩 상태 추가
+  const navigate = useNavigate();
+  const login = useAuthStore((state) => state.login);
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
-    setError(""); // 입력값 변경 시 에러 초기화
+    setError("");
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!form.username || !form.password) {
-      setError("아이디와 비밀번호를 모두 입력해 주세요.");
+    if (!form.email || !form.passwd) {
+      setError("이메일과 비밀번호를 모두 입력해 주세요.");
       return;
     }
-    setError(""); // 에러 초기화
-    alert(`ID: ${form.username}\nPW: ${form.password}`);
+    try {
+      setLoading(true); // 로딩 시작
+      await login(form.email, form.passwd);
+      Swal.fire({
+        title: "로그인",
+        text: "로그인 되었습니다.",
+        icon: "success",
+        confirmButtonText: "확인",
+      });
+      navigate("/");
+    } catch (err) {
+      setError("아이디나 비밀번호가 잘못되었습니다.");
+      console.error(err); // 에러 로그 출력
+    } finally {
+      setLoading(false); // 로딩 종료
+    }
   };
 
   return (
@@ -28,23 +47,27 @@ export default function Login() {
       </Link>
       <form onSubmit={handleSubmit} className="w-full">
         <Input
-          name="username"
-          value={form.username}
+          name="email"
+          value={form.email}
           onChange={handleChange}
-          placeholder="아이디를 입력하세요"
+          placeholder="이메일을 입력하세요"
         />
         <Input
           type="password"
-          name="password"
-          value={form.password}
+          name="passwd"
+          value={form.passwd}
           onChange={handleChange}
           placeholder="비밀번호를 입력하세요"
         />
         {error && <div className="text-red-500 text-sm mb-2">{error}</div>}
         <button
           type="submit"
-          className="w-full py-2 bg-black text-white font-semibold rounded hover:bg-[#333] cursor-pointer transition"
+          className="w-full py-2 bg-black text-white font-semibold rounded hover:bg-[#333] cursor-pointer transition flex justify-center items-center gap-2"
+          disabled={loading}
         >
+          {loading ? (
+            <span className="inline-block h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+          ) : null}
           로그인
         </button>
       </form>

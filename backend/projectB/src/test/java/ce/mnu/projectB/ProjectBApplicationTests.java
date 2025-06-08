@@ -1,13 +1,13 @@
-package com.example.project;
+package ce.mnu.projectB;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class Project1ApplicationTests {
+class ProjectBApplicationTests {
 
 	@Test
 	void contextLoads() {
 	}
-//장성균push 테스트
+
 }

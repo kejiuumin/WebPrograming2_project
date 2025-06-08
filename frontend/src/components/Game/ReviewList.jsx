@@ -1,5 +1,10 @@
 import ReviewItem from "./ReviewItem";
-export default function ReviewList({ reviews, onEdit, onDelete }) {
+export default function ReviewList({
+  reviews,
+  onEdit,
+  onDelete,
+  currentUserEmail,
+}) {
   return (
     <div>
       {reviews.length === 0 && (
@@ -9,10 +14,11 @@ export default function ReviewList({ reviews, onEdit, onDelete }) {
       )}
       {reviews.map((review) => (
         <ReviewItem
-          key={review.review_id}
+          key={review.id}
           review={review}
           onEdit={onEdit}
           onDelete={onDelete}
+          currentUserEmail={currentUserEmail}
         />
       ))}
     </div>

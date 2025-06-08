@@ -15,13 +15,13 @@ export default function ReviewForm({
         <input
           type="number"
           min="1"
-          max="10"
+          max="100"
           required
           name="rating"
           value={form.rating}
           onChange={onFormChange}
           className="w-20 p-2 border rounded"
-          placeholder="1~10"
+          placeholder="1~100"
         />
         <label className="font-semibold ml-4">코멘트</label>
         <input
